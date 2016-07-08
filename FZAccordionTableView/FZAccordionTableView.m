@@ -113,6 +113,8 @@
 @property (strong, nonatomic) NSMutableSet *mutableInitialOpenSections;
 @property (strong, nonatomic) NSMutableArray <FZAccordionTableViewSectionInfo *> *sectionInfos;
 
+@property (strong, nonatomic) NSMutableArray <NSNumber *> *openSections;
+
 @end
 
 @implementation FZAccordionTableView
@@ -313,7 +315,7 @@
     for (NSNumber *sectionToClose in sectionsToClose) {
         
         // Change animations based off which sections are closed
-        UITableViewRowAnimation closeAnimation = UITableViewRowAnimationTop;
+        UITableViewRowAnimation closeAnimation = UITableViewRowAnimationLeft;
         if (section < sectionToClose.integerValue) {
             closeAnimation = UITableViewRowAnimationBottom;
         }
@@ -321,7 +323,7 @@
             if (!self.allowsMultipleSelection &&
                 (sectionToClose.integerValue == self.sectionInfos.count - 1 ||
                  sectionToClose.integerValue == self.sectionInfos.count - 2)) {
-                    closeAnimation = UITableViewRowAnimationFade;
+                    closeAnimation = UITableViewRowAnimationLeft;
                 }
         }
         
@@ -340,13 +342,13 @@
         [self.subclassDelegate tableView:self willOpenSection:section withHeader:sectionHeaderView];
     }
     
-    UITableViewRowAnimation insertAnimation = UITableViewRowAnimationTop;
+    UITableViewRowAnimation insertAnimation = UITableViewRowAnimationLeft;
     if (!self.allowMultipleSectionsOpen) {
         // If any section is open beneath the one we are trying to open,
         // animate from the bottom
         for (NSInteger i = section-1; i >= 0; i--) {
             if ([self.sectionInfos[i] isOpen]) {
-                insertAnimation = UITableViewRowAnimationBottom;
+                insertAnimation = UITableViewRowAnimationLeft;
             }
         }
     }
@@ -354,7 +356,7 @@
     if (self.enableAnimationFix) {
         if (!self.allowsMultipleSelection &&
             (section == self.numberOfSections-1 || section == self.numberOfSections-2)) {
-            insertAnimation = UITableViewRowAnimationFade;
+            insertAnimation = UITableViewRowAnimationLeft;
         }
     }
     
@@ -371,7 +373,7 @@
 }
 
 - (void)closeSection:(NSInteger)section withHeaderView:(FZAccordionTableViewHeaderView *)sectionHeaderView {
-    [self closeSection:section withHeaderView:sectionHeaderView rowAnimation:UITableViewRowAnimationTop];
+    [self closeSection:section withHeaderView:sectionHeaderView rowAnimation:UITableViewRowAnimationLeft];
 }
 
 - (void)closeSection:(NSInteger)section withHeaderView:(FZAccordionTableViewHeaderView *)sectionHeaderView rowAnimation:(UITableViewRowAnimation)rowAnimation {
@@ -390,8 +392,50 @@
             [self.subclassDelegate tableView:self didCloseSection:section withHeader:sectionHeaderView];
         }
     }];
-    [self deleteRowsAtIndexPaths:indexPathsToModify withRowAnimation:UITableViewRowAnimationTop];
+    [self deleteRowsAtIndexPaths:indexPathsToModify withRowAnimation:UITableViewRowAnimationLeft];
     [self endUpdates];
+}
+
+
+- (void)closeAllSection {
+    //    if (![self canInteractWithHeaderAtSection:section]) {
+    //        return;
+    //    }
+    //
+    //    if ([self.subclassDelegate respondsToSelector:@selector(tableView:willCloseSection:withHeader:)]) {
+    //        [self.subclassDelegate tableView:self willCloseSection:section withHeader:sectionHeaderView];
+    //    }
+    self.openSections = [[NSMutableArray alloc] init];
+    NSMutableArray *indexPathsToModify = [[NSMutableArray alloc] init];// = [self getIndexPathsForSection:section];
+    for (NSInteger i = 0;  i < self.sectionInfos.count; i++){
+        if ([self isSectionOpen:i]) {
+            [self.openSections addObject:@(i)];
+            [self markSection:i open:NO];
+            [indexPathsToModify addObjectsFromArray: [self getIndexPathsForSection:i]];
+        }
+    }
+    //indexPathsToModify
+    //[self markSection:section open:NO];
+    [self beginUpdates];
+    //    [CATransaction setCompletionBlock: ^{
+    //        if ([self.subclassDelegate respondsToSelector:@selector(tableView:didCloseSection:withHeader:)]) {
+    //            [self.subclassDelegate tableView:self didCloseSection:section withHeader:sectionHeaderView];
+    //        }
+    //    }];
+    [self deleteRowsAtIndexPaths:indexPathsToModify withRowAnimation:UITableViewRowAnimationLeft];
+    [self endUpdates];
+}
+
+- (void)openSections:(NSArray<NSNumber *> *)sections {
+    //    NSMutableArray *indexPathsToModify = [[NSMutableArray alloc] init];
+    //    for (NSNumber *section in self.openSections) {
+    //        [self markSection:[section integerValue] open:YES];
+    //        [indexPathsToModify addObjectsFromArray: [self getIndexPathsForSection:[section integerValue]]];
+    //    }
+    //
+    //    [self beginUpdates];
+    //    [self insertRowsAtIndexPaths:indexPathsToModify withRowAnimation:UITableViewRowAnimationLeft];
+    //    [self endUpdates];
 }
 
 @end

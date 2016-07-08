@@ -118,6 +118,10 @@
  */
 - (NSInteger)sectionForHeaderView:(UITableViewHeaderFooterView * _Nonnull)headerView;
 
+- (void)markSection:(NSInteger)section open:(BOOL)open;
+- (void)closeAllSection;
+- (void)openSections:(NSArray <NSNumber *> *)sections;
+
 @end
 
 @protocol FZAccordionTableViewDelegate <NSObject>
