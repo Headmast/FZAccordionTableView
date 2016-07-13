@@ -232,11 +232,13 @@
     return section;
 }
 
-#pragma mark - Private Utility Helpers -
-
 - (void)markSection:(NSInteger)section open:(BOOL)open {
-    [self.sectionInfos[section] setOpen:open];
+    if (self.sectionInfos.count > section) {
+        [self.sectionInfos[section] setOpen:open];
+    }
 }
+
+#pragma mark - Private Utility Helpers -
 
 - (NSArray *)getIndexPathsForSection:(NSInteger)section {
     NSInteger numOfRows = [self.sectionInfos[section] numberOfRows];
@@ -398,13 +400,6 @@
 
 
 - (void)closeAllSection {
-    //    if (![self canInteractWithHeaderAtSection:section]) {
-    //        return;
-    //    }
-    //
-    //    if ([self.subclassDelegate respondsToSelector:@selector(tableView:willCloseSection:withHeader:)]) {
-    //        [self.subclassDelegate tableView:self willCloseSection:section withHeader:sectionHeaderView];
-    //    }
     self.openSections = [[NSMutableArray alloc] init];
     NSMutableArray *indexPathsToModify = [[NSMutableArray alloc] init];// = [self getIndexPathsForSection:section];
     for (NSInteger i = 0;  i < self.sectionInfos.count; i++){
@@ -414,28 +409,12 @@
             [indexPathsToModify addObjectsFromArray: [self getIndexPathsForSection:i]];
         }
     }
-    //indexPathsToModify
-    //[self markSection:section open:NO];
     [self beginUpdates];
-    //    [CATransaction setCompletionBlock: ^{
-    //        if ([self.subclassDelegate respondsToSelector:@selector(tableView:didCloseSection:withHeader:)]) {
-    //            [self.subclassDelegate tableView:self didCloseSection:section withHeader:sectionHeaderView];
-    //        }
-    //    }];
     [self deleteRowsAtIndexPaths:indexPathsToModify withRowAnimation:UITableViewRowAnimationLeft];
     [self endUpdates];
 }
 
 - (void)openSections:(NSArray<NSNumber *> *)sections {
-    //    NSMutableArray *indexPathsToModify = [[NSMutableArray alloc] init];
-    //    for (NSNumber *section in self.openSections) {
-    //        [self markSection:[section integerValue] open:YES];
-    //        [indexPathsToModify addObjectsFromArray: [self getIndexPathsForSection:[section integerValue]]];
-    //    }
-    //
-    //    [self beginUpdates];
-    //    [self insertRowsAtIndexPaths:indexPathsToModify withRowAnimation:UITableViewRowAnimationLeft];
-    //    [self endUpdates];
 }
 
 @end

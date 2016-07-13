@@ -118,9 +118,13 @@
  */
 - (NSInteger)sectionForHeaderView:(UITableViewHeaderFooterView * _Nonnull)headerView;
 
+/*!
+ @desc Mark section open.
+ 
+ @param section number of section
+ @param open set flag is open or close
+ */
 - (void)markSection:(NSInteger)section open:(BOOL)open;
-- (void)closeAllSection;
-- (void)openSections:(NSArray <NSNumber *> *)sections;
 
 @end
 
